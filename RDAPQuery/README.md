@@ -1,5 +1,7 @@
 # Registration Data Access Protocol (RDAP) Query Engine
 ----
+*This is an updated version of Matt Egen's RDAP Query app upgraded to .NET 6 LTS*
+
 Author:  Matt Egen 
 
 mattegen@microsoft.com
