@@ -1,5 +1,0 @@
-C:\Users\jtm02\source\repos\RDAPQuery\RDAPQuery\obj\Debug\net6.0\RDAPQuery.csproj.AssemblyReference.cache
-C:\Users\jtm02\source\repos\RDAPQuery\RDAPQuery\obj\Debug\net6.0\RDAPQuery.GeneratedMSBuildEditorConfig.editorconfig
-C:\Users\jtm02\source\repos\RDAPQuery\RDAPQuery\obj\Debug\net6.0\RDAPQuery.AssemblyInfoInputs.cache
-C:\Users\jtm02\source\repos\RDAPQuery\RDAPQuery\obj\Debug\net6.0\RDAPQuery.AssemblyInfo.cs
-C:\Users\jtm02\source\repos\RDAPQuery\RDAPQuery\obj\Debug\net6.0\RDAPQuery.csproj.CoreCompileInputs.cache
