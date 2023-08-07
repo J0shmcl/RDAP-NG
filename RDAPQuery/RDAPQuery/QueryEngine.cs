@@ -21,6 +21,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
+using Azure.Identity;
 
 namespace RDAPQuery
 {
@@ -132,7 +133,7 @@ namespace RDAPQuery
             new MediaTypeWithQualityHeaderValue("application/json"));
 
             // Get the response from IANA
-            HttpResponseData response = client.GetAsync(urlParameters).Result;  // Blocking call!
+            HttpResponseMessage response = client.GetAsync(urlParameters).Result;  // Blocking call!
             if (response.IsSuccessStatusCode)
             {
 
@@ -187,7 +188,7 @@ namespace RDAPQuery
             new MediaTypeWithQualityHeaderValue("application/json"));
 
             // Get the response from IANA
-            HttpResponseData response = client.GetAsync(urlParameters).Result;  // Blocking call!
+            HttpResponseMessage response = client.GetAsync(urlParameters).Result;  // Blocking call!
             if (response.IsSuccessStatusCode)
             {
 

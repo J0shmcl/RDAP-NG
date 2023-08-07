@@ -14,7 +14,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Azure.Functions.Worker.Http;
-using Microsoft.Azure.Functions.Worker.Core;//I added this one, didn't seem to fix anything
+using Azure.Identity;
 
 namespace RDAPQuery
 {
@@ -51,48 +51,12 @@ namespace RDAPQuery
         /// Gets the bearer token that we need to query LogAnalytics
         /// </summary>
         /// <returns>Token</returns>
-        private static async Task<Token> GetBearerToken()
+        private static async Task<string> GetBearerTokenWithManagedIdentity()
         {
-            #region Local Variables
-            string tenant_id = QueryEngine.GetEnvironmentVariable("tenant_id");
-            string baseAddress = string.Format("https://login.microsoftonline.com/{0}/oauth2/token", tenant_id);
-            string grant_type = QueryEngine.GetEnvironmentVariable("grant_type");
-            string client_id = QueryEngine.GetEnvironmentVariable("client_id");
-            string client_secret = QueryEngine.GetEnvironmentVariable("client_secret");
-            string resource = QueryEngine.GetEnvironmentVariable("resource");
-            Token token = null;
-            HttpClient client = new HttpClient();
-            #endregion
-            Console.Write("Received Call to GetbearerToken");
-            // Set the base address of the HttpClient object
-            client.BaseAddress = new Uri(baseAddress);
-            // Add an Accept header for JSON format.
-            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            var form = new Dictionary<string, string>
-                {
-                    {"grant_type", grant_type},
-                    {"client_id", client_id},
-                    {"client_secret", client_secret},
-                    {"resource",resource }
-                };
-
-            HttpResponseData tokenResponse = await client.PostAsync(baseAddress, new FormUrlEncodedContent(form));
-            if (tokenResponse.IsSuccessStatusCode)
-            {
-                var jsonContent = await tokenResponse.Content.ReadAsStringAsync();
-                token = JsonConvert.DeserializeObject<Token>(jsonContent);
-            }
-            else
-            {
-                Console.WriteLine("{0} ({1})", (int)tokenResponse.StatusCode, tokenResponse.ReasonPhrase);
-            }
-            // Dispose of the client since all HttpClient calls are complete.
-            client.Dispose();
-            return token;
-
+            var credential = new DefaultAzureCredential();
+            var token = await credential.GetTokenAsync(new Azure.Core.TokenRequestContext(new[] { "https://api.loganalytics.io/.default" }));
+            return token.Token;
         }
-
-
         /// <summary>
         /// Represents an OAUTH2 token object
         /// </summary>
@@ -168,10 +132,9 @@ namespace RDAPQuery
         /// <returns>QueryResults.</returns>
         public static async Task<QueryResults> QueryData(string query)
         {
-            Console.Write("Received Call to QueryData, calling GetBearerToken");
+            Console.Write("Received Call to QueryData, calling GetBearerTokenWithManagedIdentity");
             //Get the authorization bearer token
-            Task<Token> task = GetBearerToken();
-            Token token = task.Result;
+            string token = await GetBearerTokenWithManagedIdentity();
             //Now that we have the token, we can use it to call the LogAnalytics service and run our query
             HttpClient client = new HttpClient();
             string baseAddress = string.Format("https://api.loganalytics.io/v1/workspaces/{0}/query", workspaceID);
@@ -180,13 +143,13 @@ namespace RDAPQuery
             // Add an Accept header for JSON format.
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             //Add the AccessToken to the header
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token.AccessToken);
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
             var data = new StringContent(query, Encoding.UTF8, "application/json");
             try
             {
                 Console.WriteLine("Calling LogAnalytics in QueryData");
-                HttpResponseData queryResponse = await client.PostAsync(baseAddress, data);
+                HttpResponseMessage queryResponse = await client.PostAsync(baseAddress, data);
                 if (queryResponse.IsSuccessStatusCode)
                 {
                     var jsonContent = await queryResponse.Content.ReadAsStringAsync();
@@ -232,7 +195,7 @@ namespace RDAPQuery
 
                 System.Net.Http.HttpContent httpContent = new StringContent(json, Encoding.UTF8);
                 httpContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-                Task<Microsoft.Azure.Functions.Worker.Http.HttpResponseData> response = client.PostAsync(new Uri(url), httpContent);
+                Task<HttpResponseMessage> response = client.PostAsync(new Uri(url), httpContent);
 
                 System.Net.Http.HttpContent responseContent = response.Result.Content;
                 string result = responseContent.ReadAsStringAsync().Result;
