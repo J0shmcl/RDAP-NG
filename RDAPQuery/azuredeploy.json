@@ -177,7 +177,7 @@
             "LogName": "[parameters('LogAnalyticsCustomLogName')]",
             "resource": "[parameters('ResourceLocation')]",
             "query_string": "{\"query\": \"GetDomainsForRDAP\"}",
-            "WEBSITE_RUN_FROM_PACKAGE": "https://github.com/Azure/Azure-Sentinel/blob/master/Tools/RDAP/RDAPQuery/RDAPQuery.zip?raw=true"
+            "WEBSITE_RUN_FROM_PACKAGE": "https://github.com/J0shmcl/RDAP-NG/blob/main/RDAPQuery/RDAPDeploy.zip?raw=true"
             
           }
         }
