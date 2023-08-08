@@ -21,24 +21,6 @@
         "description": "Specifies the Log Analytics Workspace Key."
       }
     },
-    "TenantID": {
-      "type": "string",
-      "metadata": {
-        "description": "Specifies your Azure AD Tenant ID."
-      }
-    },
-    "clientID": {
-      "type": "string",
-      "metadata": {
-        "description": "Specifies the client ID for the application."
-      }
-    },
-    "clientSecret": {
-      "type": "securestring",
-      "metadata": {
-        "description": "Specifies the shared secret used by the application."
-      }
-    },
     "ResourceLocation": {
       "defaultValue": "https://westus2.api.loganalytics.io",
       "type": "string",
@@ -194,10 +176,6 @@
             "SharedKey": "[parameters('SharedKey')]",
             "LogName": "[parameters('LogAnalyticsCustomLogName')]",
             "resource": "[parameters('ResourceLocation')]",
-            "client_id": "[parameters('clientID')]",
-            "client_secret": "[parameters('clientSecret')]",
-            "grant_type": "client_credentials",
-            "tenant_id": "[parameters('tenantID')]",
             "query_string": "{\"query\": \"GetDomainsForRDAP\"}",
             "WEBSITE_RUN_FROM_PACKAGE": "https://github.com/Azure/Azure-Sentinel/blob/master/Tools/RDAP/RDAPQuery/RDAPQuery.zip?raw=true"
             
